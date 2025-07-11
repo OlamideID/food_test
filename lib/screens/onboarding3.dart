@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:food_test/screens/onboarding4.dart';
 
 class VerificationCodeScreen extends StatefulWidget {
@@ -14,28 +15,13 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
     (index) => TextEditingController(),
   );
   final List<FocusNode> _focusNodes = List.generate(4, (index) => FocusNode());
+
   String enteredCode = '';
-  bool _isKeyboardVisible = false;
 
   @override
   void initState() {
     super.initState();
-
-    // Clear fields and reset state on screen entry
-    for (var controller in _controllers) {
-      controller.clear();
-    }
-    enteredCode = '';
     _focusNodes[0].requestFocus();
-
-    // Listen for keyboard visibility changes
-    for (var node in _focusNodes) {
-      node.addListener(() {
-        setState(() {
-          _isKeyboardVisible = _focusNodes.any((node) => node.hasFocus);
-        });
-      });
-    }
   }
 
   @override
@@ -57,14 +43,13 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
     }
 
     setState(() {
-      enteredCode = _controllers.map((c) => c.text).join();
+      enteredCode = _controllers.map((c) => c.text.trim()).join();
     });
   }
 
   void _verifyCode() {
-    if (enteredCode == '0220') {
+    if (enteredCode.length == 4) {
       FocusScope.of(context).unfocus();
-
       Future.delayed(const Duration(milliseconds: 200), () {
         if (mounted) {
           Navigator.pushReplacement(
@@ -73,24 +58,13 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
           );
         }
       });
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Incorrect code. Please try again.')),
-      );
-      for (var controller in _controllers) {
-        controller.clear();
-      }
-      setState(() {
-        enteredCode = '';
-      });
-      _focusNodes[0].requestFocus();
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade50,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -119,7 +93,11 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
                   const SizedBox(height: 16),
                   const Text(
                     'Code',
-                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                   const SizedBox(height: 16),
                   Row(
@@ -136,12 +114,15 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
                                 : Colors.green,
                             width: 2,
                           ),
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(12),
                         ),
                         child: TextField(
                           controller: _controllers[index],
                           focusNode: _focusNodes[index],
                           keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                          ],
                           textAlign: TextAlign.center,
                           maxLength: 1,
                           style: const TextStyle(
@@ -162,51 +143,55 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
               ),
             ),
           ),
-          if (_isKeyboardVisible)
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border(
-                  top: BorderSide(color: Colors.grey.shade200, width: 1),
+
+          // Bottom action section
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.shade200,
+                  offset: const Offset(0, -1),
+                  blurRadius: 4,
                 ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  TextButton(
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Code resent (simulated).'),
-                        ),
-                      );
-                    },
-                    child: const Text(
-                      'Resend Code',
-                      style: TextStyle(color: Colors.green, fontSize: 16),
-                    ),
-                  ),
-                  Container(
-                    width: 56,
-                    height: 56,
-                    decoration: BoxDecoration(
-                      color: enteredCode.length == 4
-                          ? Colors.green
-                          : Colors.grey.shade300,
-                      shape: BoxShape.circle,
-                    ),
-                    child: IconButton(
-                      onPressed: enteredCode.length == 4 ? _verifyCode : null,
-                      icon: const Icon(
-                        Icons.arrow_forward,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              ],
             ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Code resent (simulated).')),
+                    );
+                  },
+                  child: const Text(
+                    'Resend Code',
+                    style: TextStyle(
+                      color: Colors.green,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+                Container(
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    color: enteredCode.length == 4
+                        ? Colors.green
+                        : Colors.grey.shade300,
+                    shape: BoxShape.circle,
+                  ),
+                  child: IconButton(
+                    onPressed: enteredCode.length == 4 ? _verifyCode : null,
+                    icon: const Icon(Icons.arrow_forward, color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );

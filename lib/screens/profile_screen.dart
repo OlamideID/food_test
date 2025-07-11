@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:food_test/widgets/auth.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -8,113 +9,128 @@ class ProfileScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                children: [
-                  const CircleAvatar(
-                    radius: 30,
-                    backgroundImage: NetworkImage(
-                      'https://i.pravatar.cc/150?img=3', // Sample avatar
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              // Profile Header
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                  children: [
+                    const CircleAvatar(
+                      radius: 30,
+                      backgroundImage: NetworkImage(
+                        'https://i.pravatar.cc/150?img=3',
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: const [
-                            Text(
-                              'Afsar Hossen',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18,
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: const [
+                              Text(
+                                'Afsar Hossen',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
                               ),
-                            ),
-                            SizedBox(width: 4),
-                            Icon(Icons.edit, size: 16, color: Colors.green),
-                          ],
-                        ),
-                        Text(
-                          'lmshuvo97@gmail.com',
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                            fontSize: 13,
+                              SizedBox(width: 4),
+                              Icon(Icons.edit, size: 16, color: Colors.green),
+                            ],
                           ),
-                        ),
-                      ],
+                          Text(
+                            'lmshuvo97@gmail.com',
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const Divider(),
+
+              // Profile Options
+              const _ProfileOption(
+                icon: Icons.shopping_bag_outlined,
+                label: 'Orders',
+              ),
+              const Divider(),
+
+              const _ProfileOption(
+                icon: Icons.person_outline,
+                label: 'My Details',
+              ),
+              const Divider(),
+
+              const _ProfileOption(
+                icon: Icons.location_on_outlined,
+                label: 'Delivery Address',
+              ),
+              const Divider(),
+
+              const _ProfileOption(
+                icon: Icons.payment_outlined,
+                label: 'Payment Methods',
+              ),
+              const Divider(),
+
+              const _ProfileOption(
+                icon: Icons.card_giftcard_outlined,
+                label: 'Promo Cord',
+              ),
+              const Divider(),
+
+              const _ProfileOption(
+                icon: Icons.notifications_none,
+                label: 'Notifications',
+              ),
+              const Divider(),
+
+              const _ProfileOption(icon: Icons.help_outline, label: 'Help'),
+              const Divider(),
+
+              const _ProfileOption(icon: Icons.info_outline, label: 'About'),
+              const Divider(),
+
+              const SizedBox(height: 40),
+
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: OutlinedButton.icon(
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) {
+                          return AuthWrapper();
+                        },
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.logout, color: Colors.green),
+                  label: const Text(
+                    'Log Out',
+                    style: TextStyle(color: Colors.green),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size.fromHeight(50),
+                    side: const BorderSide(color: Colors.green),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                ],
-              ),
-            ),
-            const Divider(),
-
-            const _ProfileOption(
-              icon: Icons.shopping_bag_outlined,
-              label: 'Orders',
-            ),
-            Divider(),
-
-            const _ProfileOption(
-              icon: Icons.person_outline,
-              label: 'My Details',
-            ),
-            Divider(),
-
-            const _ProfileOption(
-              icon: Icons.location_on_outlined,
-              label: 'Delivery Address',
-            ),
-            Divider(),
-
-            const _ProfileOption(
-              icon: Icons.payment_outlined,
-              label: 'Payment Methods',
-            ),
-            Divider(),
-
-            const _ProfileOption(
-              icon: Icons.card_giftcard_outlined,
-              label: 'Promo Cord',
-            ),
-            Divider(),
-
-            const _ProfileOption(
-              icon: Icons.notifications_none,
-              label: 'Notifications',
-            ),
-            Divider(),
-            const _ProfileOption(icon: Icons.help_outline, label: 'Help'),
-            Divider(),
-
-            const _ProfileOption(icon: Icons.info_outline, label: 'About'),
-            Divider(),
-
-            const Spacer(),
-
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: OutlinedButton.icon(
-                onPressed: () {},
-                icon: const Icon(Icons.logout, color: Colors.green),
-                label: const Text(
-                  'Log Out',
-                  style: TextStyle(color: Colors.green),
-                ),
-                style: OutlinedButton.styleFrom(
-                  minimumSize: const Size.fromHeight(50),
-                  side: const BorderSide(color: Colors.green),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
