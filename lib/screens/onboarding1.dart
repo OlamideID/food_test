@@ -119,14 +119,7 @@ class _GroceryDeliveryScreenState extends State<GroceryDeliveryScreen> {
                   children: [
                     Container(
                       height: 250,
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [Color(0xFFFFE5B4), Color(0xFFFFD1A9)],
-                        ),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
+                     
                     ),
                     Center(
                       child: Container(
@@ -148,7 +141,6 @@ class _GroceryDeliveryScreenState extends State<GroceryDeliveryScreen> {
                 ),
               ),
 
-              // Content
               Padding(
                 padding: const EdgeInsets.all(24),
                 child: Column(
@@ -175,7 +167,6 @@ class _GroceryDeliveryScreenState extends State<GroceryDeliveryScreen> {
                     ),
                     const SizedBox(height: 12),
 
-                    // Phone number input with country selector
                     TextField(
                       controller: _phoneController,
                       keyboardType: TextInputType.phone,

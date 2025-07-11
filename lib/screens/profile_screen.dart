@@ -12,7 +12,6 @@ class ProfileScreen extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              // Profile Header
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Row(
@@ -57,7 +56,6 @@ class ProfileScreen extends StatelessWidget {
 
               const Divider(),
 
-              // Profile Options
               const _ProfileOption(
                 icon: Icons.shopping_bag_outlined,
                 label: 'Orders',

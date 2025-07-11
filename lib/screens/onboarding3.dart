@@ -10,66 +10,86 @@ class VerificationCodeScreen extends StatefulWidget {
 }
 
 class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
-  final List<TextEditingController> _controllers = List.generate(
-    4,
-    (index) => TextEditingController(),
-  );
-  final List<FocusNode> _focusNodes = List.generate(4, (index) => FocusNode());
-
-  String enteredCode = '';
+  final TextEditingController _codeController = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
+  String code = '';
 
   @override
   void initState() {
     super.initState();
-    _focusNodes[0].requestFocus();
+    _focusNode.requestFocus();
+    _codeController.addListener(() {
+      final digitsOnly = _codeController.text.replaceAll(RegExp(r'\D'), '');
+      if (digitsOnly.length <= 4) {
+        setState(() => code = digitsOnly);
+      } else {
+        _codeController.text = code;
+        _codeController.selection = TextSelection.collapsed(
+          offset: code.length,
+        );
+      }
+    });
   }
 
   @override
   void dispose() {
-    for (var controller in _controllers) {
-      controller.dispose();
-    }
-    for (var node in _focusNodes) {
-      node.dispose();
-    }
+    _codeController.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
-  void _onCodeChanged(int index, String value) {
-    if (value.length == 1 && index < 3) {
-      _focusNodes[index + 1].requestFocus();
-    } else if (value.isEmpty && index > 0) {
-      _focusNodes[index - 1].requestFocus();
-    }
-
-    setState(() {
-      enteredCode = _controllers.map((c) => c.text.trim()).join();
+  void _verifyCode() {
+    FocusScope.of(context).unfocus();
+    Future.delayed(const Duration(milliseconds: 200), () {
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const LocationSelectionScreen()),
+        );
+      }
     });
   }
 
-  void _verifyCode() {
-    if (enteredCode.length == 4) {
-      FocusScope.of(context).unfocus();
-      Future.delayed(const Duration(milliseconds: 200), () {
-        if (mounted) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (_) => const LocationSelectionScreen()),
-          );
-        }
-      });
-    }
+  Widget _buildCodePreview() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: List.generate(4, (index) {
+        final char = index < code.length ? code[index] : '-';
+        final isActive = index == code.length;
+        return Container(
+          width: 50,
+          height: 60,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                width: 2,
+                color: isActive ? Colors.green : Colors.grey,
+              ),
+            ),
+          ),
+          child: Text(
+            char,
+            style: const TextStyle(
+              fontSize: 32,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+        );
+      }),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF9F9F9),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -77,7 +97,7 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
         children: [
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -90,7 +110,7 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
                       color: Colors.black,
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 20),
                   const Text(
                     'Code',
                     style: TextStyle(
@@ -99,44 +119,46 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: List.generate(
-                      4,
-                      (index) => Container(
-                        width: 60,
-                        height: 60,
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: _controllers[index].text.isEmpty
-                                ? Colors.grey.shade300
-                                : Colors.green,
-                            width: 2,
+                  const SizedBox(height: 24),
+
+                  GestureDetector(
+                    onTap: () => _focusNode.requestFocus(),
+                    child: Stack(
+                      children: [
+                        _buildCodePreview(),
+
+                        Positioned.fill(
+                          child: TextField(
+                            controller: _codeController,
+                            focusNode: _focusNode,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
+                            maxLength: 4,
+                            style: const TextStyle(
+                              color: Colors.transparent,
+                              fontSize: 1,
+                            ),
+                            cursorColor: Colors.transparent,
+                            decoration: const InputDecoration(
+                              counterText: '',
+                              border: InputBorder.none,
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                            onChanged: (value) {
+                              final digitsOnly = value.replaceAll(
+                                RegExp(r'\D'),
+                                '',
+                              );
+                              if (digitsOnly.length <= 4 &&
+                                  digitsOnly != code) {
+                                setState(() => code = digitsOnly);
+                              }
+                            },
                           ),
-                          borderRadius: BorderRadius.circular(12),
                         ),
-                        child: TextField(
-                          controller: _controllers[index],
-                          focusNode: _focusNodes[index],
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly,
-                          ],
-                          textAlign: TextAlign.center,
-                          maxLength: 1,
-                          style: const TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          decoration: const InputDecoration(
-                            counterText: '',
-                            border: InputBorder.none,
-                            contentPadding: EdgeInsets.zero,
-                          ),
-                          onChanged: (value) => _onCodeChanged(index, value),
-                        ),
-                      ),
+                      ],
                     ),
                   ),
                 ],
@@ -144,19 +166,8 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
             ),
           ),
 
-          // Bottom action section
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.shade200,
-                  offset: const Offset(0, -1),
-                  blurRadius: 4,
-                ),
-              ],
-            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -179,13 +190,13 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
                   width: 56,
                   height: 56,
                   decoration: BoxDecoration(
-                    color: enteredCode.length == 4
+                    color: code.length == 4
                         ? Colors.green
                         : Colors.grey.shade300,
                     shape: BoxShape.circle,
                   ),
                   child: IconButton(
-                    onPressed: enteredCode.length == 4 ? _verifyCode : null,
+                    onPressed: code.length == 4 ? _verifyCode : null,
                     icon: const Icon(Icons.arrow_forward, color: Colors.white),
                   ),
                 ),
@@ -197,3 +208,5 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
     );
   }
 }
+
+
