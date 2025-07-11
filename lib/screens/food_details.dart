@@ -1,5 +1,5 @@
-import 'dart:io';
-
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -68,7 +68,9 @@ class _MealDetailScreenState extends ConsumerState<MealDetailScreen> {
         actions: [
           IconButton(
             icon: Icon(
-              Platform.isIOS ? CupertinoIcons.share : Icons.share,
+              (!kIsWeb && Platform.isIOS)
+                  ? CupertinoIcons.share
+                  : Icons.share,
               color: Colors.black,
             ),
             onPressed: () {},
@@ -93,7 +95,6 @@ class _MealDetailScreenState extends ConsumerState<MealDetailScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -130,13 +131,10 @@ class _MealDetailScreenState extends ConsumerState<MealDetailScreen> {
                   ),
                 ],
               ),
-
               const SizedBox(height: 20),
-
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Quantity Controls
                   Row(
                     children: [
                       Container(
@@ -181,7 +179,6 @@ class _MealDetailScreenState extends ConsumerState<MealDetailScreen> {
                       ),
                     ],
                   ),
-                  // Price
                   Text(
                     '\$${(widget.meal.price * quantity).toStringAsFixed(2)}',
                     style: const TextStyle(
@@ -193,14 +190,13 @@ class _MealDetailScreenState extends ConsumerState<MealDetailScreen> {
                 ],
               ),
               const SizedBox(height: 30),
-
               SizedBox(
                 width: double.infinity,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     InkWell(
-                      onTap: _toggleProductDetail, // Use the toggle method
+                      onTap: _toggleProductDetail,
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         child: Row(
@@ -250,8 +246,6 @@ class _MealDetailScreenState extends ConsumerState<MealDetailScreen> {
                   ],
                 ),
               ),
-
-              // Nutrition Section
               SizedBox(
                 width: double.infinity,
                 child: Column(
@@ -305,8 +299,6 @@ class _MealDetailScreenState extends ConsumerState<MealDetailScreen> {
                   ],
                 ),
               ),
-
-              // Review Section
               SizedBox(
                 width: double.infinity,
                 child: InkWell(
@@ -326,7 +318,6 @@ class _MealDetailScreenState extends ConsumerState<MealDetailScreen> {
                         ),
                         Row(
                           children: [
-                            // Star Rating
                             Row(
                               children: List.generate(5, (index) {
                                 return Icon(
@@ -351,7 +342,6 @@ class _MealDetailScreenState extends ConsumerState<MealDetailScreen> {
                 ),
               ),
               const SizedBox(height: 30),
-
               SizedBox(
                 width: double.infinity,
                 height: 56,
