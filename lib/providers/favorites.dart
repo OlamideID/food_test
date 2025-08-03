@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -23,7 +24,9 @@ class FavoritesNotifier extends StateNotifier<Set<String>> {
         state = decoded.cast<String>().toSet();
       }
     } catch (e) {
-      print('Error loading favorites: $e');
+      if (kDebugMode) {
+        print('Error loading favorites: $e');
+      }
     }
   }
 
@@ -33,7 +36,9 @@ class FavoritesNotifier extends StateNotifier<Set<String>> {
       final jsonString = jsonEncode(state.toList());
       await prefs.setString(_prefsKey, jsonString);
     } catch (e) {
-      print('Error saving favorites: $e');
+      if (kDebugMode) {
+        print('Error saving favorites: $e');
+      }
     }
   }
 

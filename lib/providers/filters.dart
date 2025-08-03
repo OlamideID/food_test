@@ -3,7 +3,6 @@ import 'package:food_test/data/mockdata.dart';
 import 'package:food_test/models/meal.dart';
 import 'package:food_test/providers/search_provider.dart';
 
-// Filter state class
 class FilterState {
   final Set<String> selectedCategories;
   final Set<String> selectedBrands;
@@ -25,7 +24,6 @@ class FilterState {
   }
 }
 
-// Filter state notifier
 class FilterNotifier extends StateNotifier<FilterState> {
   FilterNotifier() : super(FilterState());
 
@@ -54,17 +52,13 @@ class FilterNotifier extends StateNotifier<FilterState> {
   }
 }
 
-// Filter provider
 final filterProvider = StateNotifierProvider<FilterNotifier, FilterState>((ref) {
   return FilterNotifier();
 });
 
-// Available brands provider (extracted from meal data)
 final availableBrandsProvider = Provider<List<String>>((ref) {
-  // Extract unique brands from meals
   final Set<String> brands = {};
   
-  // Add some sample brands based on the meal data
   brands.addAll([
     'Coca-Cola',
     'Pepsi',
@@ -82,14 +76,12 @@ final availableBrandsProvider = Provider<List<String>>((ref) {
   return brands.toList()..sort();
 });
 
-// Filtered meals provider that combines search and filter
 final filteredMealsProvider = Provider<List<Meal>>((ref) {
   final searchQuery = ref.watch(searchQueryProvider);
   final filterState = ref.watch(filterProvider);
   
   List<Meal> meals = List.from(dummyMeals);
   
-  // Apply search filter
   if (searchQuery.isNotEmpty) {
     meals = meals.where((meal) {
       return meal.title.toLowerCase().contains(searchQuery.toLowerCase()) ||
@@ -97,7 +89,6 @@ final filteredMealsProvider = Provider<List<Meal>>((ref) {
     }).toList();
   }
   
-  // Apply category filter
   if (filterState.selectedCategories.isNotEmpty) {
     meals = meals.where((meal) {
       return meal.categories.any((category) => 
@@ -105,10 +96,8 @@ final filteredMealsProvider = Provider<List<Meal>>((ref) {
     }).toList();
   }
   
-  // Apply brand filter (simplified - in real app, you'd have a brand field in Meal)
   if (filterState.selectedBrands.isNotEmpty) {
     meals = meals.where((meal) {
-      // Simple brand matching based on meal title for demo
       return filterState.selectedBrands.any((brand) => 
         meal.title.toLowerCase().contains(brand.toLowerCase()));
     }).toList();
